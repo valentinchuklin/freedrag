@@ -19,6 +19,8 @@ function Freedrag(container) {
 
         this.currentX;
         this.initialX;
+        this.departurePoint;
+        this.arrivalPoint;
         this.xOffset = 0;
 
         this.inner.style.transform = 'translateX(' + this.xOffset + ')';
@@ -26,24 +28,39 @@ function Freedrag(container) {
 
     this.dragStart = (e) => {
         if (e.type == 'mousedown') {
+            this.departurePoint = e.clientX;
             this.initialX = e.clientX - this.xOffset;
             this.container.addEventListener('mousemove', this.drag, false)
+            this.container.addEventListener('mouseleave', this.dragEnd, false)
         } else if (e.type == 'touchstart') {
+            this.departurePoint = e.touches[0].clientX;
             this.initialX = e.touches[0].clientX - this.xOffset;
             this.container.addEventListener('touchmove', this.drag, false)
+            this.container.addEventListener('touchcancel', this.dragEnd, false);
         }
     }
 
-    this.dragEnd = () => {
+    this.dragEnd = (e) => {
+
+        if (e.type == 'mouseup' || e.type == 'mouseleave') {
+            this.arrivalPoint = e.clientX;
+        } else if (e.type == 'touchend' || e.type == 'touchcancel') {
+            this.arrivalPoint = e.changedTouches[0].clientX;
+        }
+
         this.container.removeEventListener('mousemove', this.drag, false);
         this.container.removeEventListener('touchmove', this.drag, false);
+
+        this.container.removeEventListener('mouseleave', this.dragEnd, false)
+        this.container.removeEventListener('touchcancel', this.dragEnd, false);
+
 
         if (this.currentX < this.min) {
 
             this.currentX = this.min;
             this.xOffset = this.currentX;
 
-            this.inner.style.transition = 'transform 320ms linear';
+            this.inner.style.transition = 'transform 320ms ease-out';
             this.inner.style.transform = 'translateX(' + this.min + 'px)';
 
             setTimeout(() => { this.inner.style.transition = "none" }, 320);
@@ -53,15 +70,26 @@ function Freedrag(container) {
             this.currentX = this.max;
             this.xOffset = this.currentX;
 
-            this.inner.style.transition = 'transform 320ms linear';
+            this.inner.style.transition = 'transform 320ms ease-out';
             this.inner.style.transform = 'translateX(' + this.max + 'px)';
 
             setTimeout(() => { this.inner.style.transition = "none" }, 320);
         } else {
-            this.inner.style.transition = 'transform 320ms linear';
-            setTimeout(() => { this.inner.style.transition = "none" }, 320);
-        }
 
+            if (this.departurePoint > this.arrivalPoint) {
+                this.currentX = this.currentX - 70;
+                this.xOffset = this.currentX;
+                this.inner.style.transition = 'transform 320ms ease-out';
+                this.setTranslate();
+                setTimeout(() => { this.inner.style.transition = "none" }, 320);
+            } else if (this.departurePoint < this.arrivalPoint) {
+                this.currentX = this.currentX + 70;
+                this.xOffset = this.currentX;
+                this.inner.style.transition = 'transform 320ms ease-out';
+                this.setTranslate();
+                setTimeout(() => { this.inner.style.transition = "none" }, 320);
+            }
+        }
         this.initialX = this.currentX;
     }
 
@@ -85,8 +113,8 @@ function Freedrag(container) {
     }
 
     this.setTranslate = () => {
-        if (this.currentX > this.min - 300 && this.currentX < this.max + 300) {
-            this.inner.style.transform = 'translateX(' + this.currentX + 'px)';
+        if (this.xOffset > this.min - 300 && this.xOffset < this.max + 300) {
+            this.inner.style.transform = 'translateX(' + this.xOffset + 'px)';
         }
     }
 
@@ -100,12 +128,9 @@ function Freedrag(container) {
 
     this.container.addEventListener("mousedown", this.dragStart, false);
     this.container.addEventListener("touchstart", this.dragStart, false);
-    
+
     this.container.addEventListener("mouseup", this.dragEnd, false);
     this.container.addEventListener("touchend", this.dragEnd, false);
-    
-    this.container.addEventListener('mouseleave', this.dragEnd)
-    this.container.addEventListener('touchcancel', this.dragEnd);
 
     window.addEventListener('resize', this.onResize);
 }

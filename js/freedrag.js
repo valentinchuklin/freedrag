@@ -82,12 +82,14 @@ function Freedrag(container) {
                 this.inner.style.transition = 'transform 320ms ease-out';
                 this.setTranslate();
                 setTimeout(() => { this.inner.style.transition = "none" }, 320);
+                this.dragEnd();
             } else if (this.departurePoint < this.arrivalPoint) {
                 this.currentX = this.currentX + 70;
                 this.xOffset = this.currentX;
                 this.inner.style.transition = 'transform 320ms ease-out';
                 this.setTranslate();
                 setTimeout(() => { this.inner.style.transition = "none" }, 320);
+                this.dragEnd();
             }
         }
         this.initialX = this.currentX;

@@ -41,11 +41,12 @@ function Freedrag(container) {
     }
 
     this.dragEnd = (e) => {
-
-        if (e.type == 'mouseup' || e.type == 'mouseleave') {
-            this.arrivalPoint = e.clientX;
-        } else if (e.type == 'touchend' || e.type == 'touchcancel') {
-            this.arrivalPoint = e.changedTouches[0].clientX;
+        if (e.type) {
+            if (e.type == 'mouseup' || e.type == 'mouseleave') {
+                this.arrivalPoint = e.clientX;
+            } else if (e.type == 'touchend' || e.type == 'touchcancel') {
+                this.arrivalPoint = e.changedTouches[0].clientX;
+            }
         }
 
         this.container.removeEventListener('mousemove', this.drag, false);
@@ -54,44 +55,20 @@ function Freedrag(container) {
         this.container.removeEventListener('mouseleave', this.dragEnd, false)
         this.container.removeEventListener('touchcancel', this.dragEnd, false);
 
-
-        if (this.currentX < this.min) {
-
-            this.currentX = this.min;
+        if (this.departurePoint > this.arrivalPoint) {
+            this.currentX = this.currentX - 70;
             this.xOffset = this.currentX;
-
             this.inner.style.transition = 'transform 320ms ease-out';
-            this.inner.style.transform = 'translateX(' + this.min + 'px)';
-
+            this.setTranslate();
             setTimeout(() => { this.inner.style.transition = "none" }, 320);
-
-        } else if (this.currentX > this.max) {
-
-            this.currentX = this.max;
+        } else if (this.departurePoint < this.arrivalPoint) {
+            this.currentX = this.currentX + 70;
             this.xOffset = this.currentX;
-
             this.inner.style.transition = 'transform 320ms ease-out';
-            this.inner.style.transform = 'translateX(' + this.max + 'px)';
-
+            this.setTranslate();
             setTimeout(() => { this.inner.style.transition = "none" }, 320);
-        } else {
-
-            if (this.departurePoint > this.arrivalPoint) {
-                this.currentX = this.currentX - 70;
-                this.xOffset = this.currentX;
-                this.inner.style.transition = 'transform 320ms ease-out';
-                this.setTranslate();
-                setTimeout(() => { this.inner.style.transition = "none" }, 320);
-                this.dragEnd();
-            } else if (this.departurePoint < this.arrivalPoint) {
-                this.currentX = this.currentX + 70;
-                this.xOffset = this.currentX;
-                this.inner.style.transition = 'transform 320ms ease-out';
-                this.setTranslate();
-                setTimeout(() => { this.inner.style.transition = "none" }, 320);
-                this.dragEnd();
-            }
         }
+        this.moveBack();
         this.initialX = this.currentX;
     }
 
@@ -123,6 +100,29 @@ function Freedrag(container) {
     this.onResize = () => {
         if (window.getComputedStyle(this.container).width != this.containerWidth) {
             this.init();
+        }
+    }
+
+    this.moveBack = () => {
+        if (this.currentX < this.min) {
+
+            this.currentX = this.min;
+            this.xOffset = this.currentX;
+
+            this.inner.style.transition = 'transform 320ms ease-out';
+            this.inner.style.transform = 'translateX(' + this.min + 'px)';
+
+            setTimeout(() => { this.inner.style.transition = "none" }, 320);
+
+        } else if (this.currentX > this.max) {
+
+            this.currentX = this.max;
+            this.xOffset = this.currentX;
+
+            this.inner.style.transition = 'transform 320ms ease-out';
+            this.inner.style.transform = 'translateX(' + this.max + 'px)';
+
+            setTimeout(() => { this.inner.style.transition = "none" }, 320);
         }
     }
 

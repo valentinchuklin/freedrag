@@ -18,19 +18,13 @@
 
 ### Пример разметки
 
-`<div class="freedrag">`
-
-`            <div class="freedrag__inner">`
-
-`                <div class="freedrag__item">1</div>`
-
-`                <div class="freedrag__item">2</div>`
-
-`                <div class="freedrag__item">3</div>`
-
-`            </div>`
-
-`        </div>`
+    <div class="freedrag">
+                <div class="freedrag__inner">
+                    <div class="freedrag__item">1</div>
+                    <div class="freedrag__item">2</div>
+                    <div class="freedrag__item">3</div>
+                </div>
+            </div>
 
 ## Инструкция по подключению
 
